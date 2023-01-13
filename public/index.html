@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        .message {
+            display: flex;
+            flex-direction: row;
+        }
+        .message div {
+            margin: 3px;
+        }
+        .content {
+            font-weight: bold;
+        }
+        .createdAt {
+            color: grey
+        }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>hello world</div>
+    <div id="messages">
+        <div class="message">
+            <div class="sender"></div>
+            <div class="content"></div>
+            <div class="createdAt"></div>
+        </div>
+    </div>
+    <form id='form' action="">
+        <input id="input" type="text">
+        <button type="submit">send</button>
+    </form>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  let messages = document.getElementById('messages');
+  let form = document.getElementById('form');
+  let input = document.getElementById('input');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      input.value = '';
+    }
+  });
+
+  socket.on('chat message', msg => {
+    console.log(msg);
+    let msgTemplate = document.querySelector('.message')
+    let msgDiv = msgTemplate.cloneNode(deep=true)
+    msgDiv.querySelector('.sender').textContent = msg.sender
+    msgDiv.querySelector('.content').textContent = msg.content
+    msgDiv.querySelector('.createdAt').textContent = msg.createdAt
+
+    //   let item = document.createElement('li')
+    //   item.textContent = msg
+      messages.appendChild(msgDiv)
+  })
+</script>
+</html>
